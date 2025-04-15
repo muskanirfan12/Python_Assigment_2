@@ -1,78 +1,65 @@
 import re
+import random
+import string
 import streamlit as st
 
-# Page styling:
-st.set_page_config(page_title="Password Strength Meter", page_icon="🌘", layout="centered")
+def generate_strong_password():
+    characters = string.ascii_letters + string.digits + "!@#$%^&*"
+    return ''.join(random.choice(characters) for _ in range(12))
 
-# Custom CSS
-st.markdown(
-    """
-    <style>
-    .main { text-align: center; }
-    .stTextInput { width: 60% !important; margin: auto; }
-    .stButton button {
-        width: 50%;
-        background-color: #4CAF50;
-        color: white;
-        font-size: 18px;
-    }
-    .stButton button:hover {
-        background-color: #45a049;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# Page title and description
-st.title("🔐 Password Strength Checker")
-st.write("Enter your password to check its strength and get suggestions for improvement. 🔍")
-
-# Function to check password strength
 def check_password_strength(password):
     score = 0
-    feedback = []
-
+    common_passwords = ["password", "123456", "qwerty", "password123", "admin", "letmein"]
+    
+    if password in common_passwords:
+        st.error("❌ **This password is too common. Choose a more secure one.**")
+        return "Weak"
+    
     if len(password) >= 8:
         score += 1
     else:
-        feedback.append("❌ Password should be **at least 8 characters long**.")
-
+        st.warning("❌ **Password should be at least 8 characters long.**")
+    
     if re.search(r"[A-Z]", password) and re.search(r"[a-z]", password):
         score += 1
     else:
-        feedback.append("❌ Password should include **both uppercase (A-Z) and lowercase (a-z) letters**.")
-
+        st.warning("❌ **Include both uppercase and lowercase letters.**")
+    
     if re.search(r"\d", password):
         score += 1
     else:
-        feedback.append("❌ Password should include **at least one number (0-9)**.")
-
+        st.warning("❌ **Add at least one number (0-9).**")
+    
     if re.search(r"[!@#$%^&*]", password):
         score += 1
     else:
-        feedback.append("❌ Password should include **at least one special character (!@#$%^&*)**.")
-
-    # Display password strength result
+        st.warning("❌ **Include at least one special character (!@#$%^&*).**")
+    
+    st.markdown("---")
+    
     if score == 4:
-        st.success("🔥 **Strong Password**. Your password is secure.")
+        st.success("✅ **Strong Password! 🎉 Great job securing your account!**")
+        return "Strong"
     elif score == 3:
-        st.warning("⚠️ **Moderate Password**. Consider improving it by adding more features.")
+        st.info("⚠️ **Moderate Password - Consider adding more security features.**")
+        return "Moderate"
     else:
-        st.error("🚨 **Weak Password**. Follow the suggestions below to strengthen it.")
+        st.error("❌ **Weak Password - Improve it using the suggestions above.**")
+        st.info(f"💡 **Suggested Strong Password:** ✨ `{generate_strong_password()}` ✨")
+        return "Weak"
 
-    # Feedback
-    if feedback:
-        with st.expander("🔍 **Suggestions to Improve Your Password**"):
-            for item in feedback:
-                st.write(item)
+# Streamlit UI
+st.set_page_config(page_title="Password Strength Meter", page_icon="🔐")
+st.title("🔐 Password Strength Meter - Created By Rimsha Ansari 🔐")
 
-# Input field
-password = st.text_input("Enter your Password:", type="password", help="Check if your password is strong 🔐")
+st.markdown("""
+### 🔎 Check Your Password Strength!
+- ✅ **Strong passwords** are safe to use.
+- ⚠️ **Moderate passwords** need extra security.
+- ❌ **Weak passwords** get improvement suggestions.
+---
+""", unsafe_allow_html=True)
 
-# Button logic
-if st.button("Check Password Strength"):
-    if password:
-        check_password_strength(password)
-    else:
-        st.warning("⚠️ Please enter your password first!")
+password = st.text_input("💡 **Enter your password:**", type="password")
+if password:
+    check_password_strength(password)
