@@ -50,7 +50,7 @@ def check_password_strength(password):
 
 # Streamlit UI
 st.set_page_config(page_title="Password Strength Meter", page_icon="🔐")
-st.title("🔐 Password Strength Meter - Created By Rimsha Ansari 🔐")
+st.title("🔐 Password Strength Meter - Created By Muskan Irfan Ahmed 🔐")
 
 st.markdown("""
 ### 🔎 Check Your Password Strength!
